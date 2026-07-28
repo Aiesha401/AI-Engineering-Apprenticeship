@@ -1,7 +1,8 @@
 import sqlite3
 
 connection = sqlite3.connect(
-    "mini_projects/commerceops_agent/commerceops.db"
+    "mini_projects/commerceops_agent/commerceops.db",
+    check_same_thread=False
 )
 
 cursor = connection.cursor()
