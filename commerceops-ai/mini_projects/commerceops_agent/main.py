@@ -1,3 +1,5 @@
+import logging_config
+
 from agent import process_message
 
 

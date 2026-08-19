@@ -1,9 +1,11 @@
+import logging
 import json
 
 from config import client, MODEL
 from tools import tool_functions
 from schemas import tools
 
+logger = logging.getLogger(__name__)
 
 messages = [
     {
@@ -19,6 +21,10 @@ messages = [
 
 
 def process_message(user_input):
+
+    logger.info(
+        "Received user message"
+    )
 
     messages.append(
         {
@@ -39,6 +45,11 @@ def process_message(user_input):
 
         message = response.choices[0].message
 
+        logger.info(
+            "Model response received"
+        )
+
+
         messages.append(message)
 
         if message.tool_calls:
@@ -47,8 +58,18 @@ def process_message(user_input):
 
                 tool_name = tool_call.function.name
 
+                logger.info(
+                    "Tool requested: %s",
+                    tool_name
+                )
+
                 arguments = json.loads(
                     tool_call.function.arguments
+                )
+
+                logger.info(
+                    "Tool arguments: %s",
+                    arguments
                 )
 
                 if tool_name not in tool_functions:
@@ -64,7 +85,17 @@ def process_message(user_input):
                             tool_name
                         ](**arguments)
 
+                        logger.info(
+                            "Tool completed: %s",
+                            tool_name
+                        )
+
                     except Exception as e:
+
+                        logger.exception(
+                            "Tool execution failed: %s",
+                            tool_name
+                        )
 
                         tool_result = (
                             f"Tool execution failed: {e}"
