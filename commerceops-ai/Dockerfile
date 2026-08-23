@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY mini_projects/commerceops_agent ./mini_projects/commerceops_agent
 
-CMD ["python", "mini_projects/commerceops_agent/main.py"]
+CMD ["sh", "-c", "uvicorn mini_projects.commerceops_agent.api:app --host 0.0.0.0 --port ${PORT:-8000}"]

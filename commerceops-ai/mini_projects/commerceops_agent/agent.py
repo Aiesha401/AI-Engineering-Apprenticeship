@@ -1,9 +1,9 @@
 import logging
 import json
 
-from config import client, MODEL
-from tools import tool_functions
-from schemas import tools
+from .config import client, MODEL
+from .tools import tool_functions
+from .schemas import tools
 
 logger = logging.getLogger(__name__)
 
