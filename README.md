@@ -119,28 +119,30 @@ The application also exposes Swagger/OpenAPI documentation through /docs.
 ## How It Works
 CommerceOps AI uses an LLM-driven tool-calling workflow to answer business questions.
 
-User Request
-     │
-     ▼
-    LLM
-     │
-     ▼
-Tool Selection
-     │
-     ▼
-Tool Execution
-     │
-     ▼
-SQLite Database
-     │
-     ▼
-Tool Result
-     │
-     ▼
-    LLM
-     │
-     ▼
-Final Answer
+``text
+     User Request
+          │
+          ▼
+     LLM
+          │
+          ▼
+     Tool Selection
+          │
+          ▼
+     Tool Execution
+          │
+          ▼
+     SQLite Database
+          │
+          ▼
+     Tool Result
+          │
+          ▼
+     LLM
+          │
+          ▼
+     Final Answer
+```
 
 The agent can execute multiple tools when a request requires information from multiple operations.
 The application also logs important steps such as incoming requests, model responses, requested tools, tool arguments, and tool completion.
