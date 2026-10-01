@@ -119,7 +119,7 @@ The application also exposes Swagger/OpenAPI documentation through /docs.
 ## How It Works
 CommerceOps AI uses an LLM-driven tool-calling workflow to answer business questions.
 
-``text
+```text
      User Request
           │
           ▼
