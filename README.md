@@ -234,13 +234,13 @@ Build the Docker image:
 docker build -t commerceops-ai .
 
 Run the container:
-docker run --env-file .env -p 8000:8000 commerceops-ai
+docker run --env-file .env -p 8001:8000 commerceops-ai
 
 The API can then be accessed at:
-http://localhost:8000
+http://localhost:8001
 
 Swagger documentation:
-http://localhost:8000/docs
+http://localhost:8001/docs
 
 ## Deployment
 
