@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from .config import MODEL, client
 from .schemas import tools
@@ -7,6 +8,9 @@ from .tools import tool_functions
 
 
 logger = logging.getLogger(__name__)
+
+
+MAX_TOOL_CALL_ROUNDS = 5
 
 
 messages = [
@@ -23,6 +27,8 @@ messages = [
 
 
 def process_message(user_input):
+    start_time = time.perf_counter()
+
     logger.info("Received user message")
 
     messages.append(
@@ -32,7 +38,8 @@ def process_message(user_input):
         }
     )
 
-    while True:
+    for _ in range(MAX_TOOL_CALL_ROUNDS):
+
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages,
@@ -48,37 +55,69 @@ def process_message(user_input):
         messages.append(message)
 
         if not message.tool_calls:
+            elapsed_time = time.perf_counter() - start_time
+
+            logger.info(
+                "Request completed in %.2f seconds",
+                elapsed_time
+            )
+
             return message.content
 
         for tool_call in message.tool_calls:
+
             tool_name = tool_call.function.name
 
-            logger.info("Tool requested: %s", tool_name)
+            logger.info(
+                "Tool requested: %s",
+                tool_name
+            )
 
             arguments = json.loads(
                 tool_call.function.arguments
             )
 
-            logger.info("Tool arguments: %s", arguments)
+            logger.info(
+                "Tool arguments: %s",
+                arguments
+            )
 
             if tool_name not in tool_functions:
-                tool_result = f"Tool '{tool_name}' not found."
+
+                tool_result = (
+                    f"Tool '{tool_name}' not found."
+                )
+
             else:
+
                 try:
-                    tool_result = tool_functions[tool_name](**arguments)
+                    tool_start_time = time.perf_counter()
+
+                    tool_result = tool_functions[
+                        tool_name
+                    ](**arguments)
+
+                    tool_elapsed_time = (
+                        time.perf_counter()
+                        - tool_start_time
+                    )
 
                     logger.info(
-                        "Tool completed: %s",
-                        tool_name
+                        "Tool completed: %s in %.4f seconds",
+                        tool_name,
+                        tool_elapsed_time
                     )
 
                 except Exception as e:
+
                     logger.exception(
                         "Tool execution failed: %s",
                         tool_name
                     )
 
-                    tool_result = f"Tool execution failed: {e}"
+                    tool_result = (
+                        f"Tool execution failed: {e}"
+                    )
 
             messages.append(
                 {
@@ -87,3 +126,9 @@ def process_message(user_input):
                     "content": str(tool_result)
                 }
             )
+
+    logger.warning(
+        "Maximum tool call rounds reached"
+    )
+
+    return "Unable to complete the request."
