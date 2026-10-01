@@ -4,6 +4,12 @@ CommerceOps AI is an AI-powered business operations assistant that allows users 
 
 The application uses an LLM with tool calling to interact with business data stored in SQLite. It provides a FastAPI interface and can be run locally or inside a Docker container.
 
+## Live Demo
+
+**Web App:** https://commerceops-ai.onrender.com/app
+
+**API Documentation:** https://commerceops-ai.onrender.com/docs
+
 ## Features
 
 - Natural-language business queries
@@ -17,6 +23,15 @@ The application uses an LLM with tool calling to interact with business data sto
 - FastAPI REST API
 - Structured application logging
 - Dockerized deployment
+- Browser-based chat interface for interacting with the AI assistant
+- FastAPI REST API for programmatic access
+- SQLite-backed business data
+- LLM tool calling for business operations
+- Multi-step agent workflow
+- Structured logging and performance monitoring
+- Automated tests with pytest
+- Docker containerization
+- Cloud deployment with Render
 
 ## Tech Stack
 
@@ -32,36 +47,28 @@ The application uses an LLM with tool calling to interact with business data sto
 ## Architecture
 
 CommerceOps AI follows a modular agent-based architecture:
-
 ```text
-    User
-     │
-     ▼
-    FastAPI
-     │
-     ▼
-    Agent
-     │
-     ▼
-    LLM
-     │
-     ├── Tool Call
-     │
-     ▼
-    CommerceOps Tools
-     │
-     ▼
-    SQLite Database
-     │
-     ▼
-    Tool Result
-     │
-     ▼
-    LLM
-     │
-     ▼
-    Final Response
+     User
+      │
+      ▼
+     Web Chat Interface
+      │
+      ▼
+     FastAPI /chat
+      │
+      ▼
+     CommerceOps Agent
+      │
+      ▼
+     LLM Tool Calling
+      │
+      ▼ 
+     Business Tools
+      │
+      ▼
+     SQLite Database
 ```
+The application also exposes Swagger/OpenAPI documentation through /docs.
 
 ## Request Flow
 1. The user sends a natural-language request.
@@ -149,7 +156,47 @@ The CommerceOps agent currently provides tools for:
 
 ## API
 
-The application exposes a FastAPI REST API.
+### Web Interface
+
+`GET /app`
+
+Provides the browser-based CommerceOps AI chat interface.
+
+### Health Check
+
+`GET /`
+
+Returns the service health status.
+
+### Chat
+
+`POST /chat`
+
+Accepts a user message and returns the AI-generated response.
+
+Example request:
+
+```json
+{
+  "message": "How many iPhones are in stock?"
+}
+```
+
+### API Documentation
+
+`/docs`
+
+Provides interactive Swagger/OpenAPI documentation.
+
+## Web Interface
+
+CommerceOps AI includes a lightweight browser-based chat interface.
+
+The interface is available at:
+
+`/app`
+
+Users can ask questions about inventory, revenue, and products. The frontend communicates with the FastAPI `/chat` endpoint and displays the assistant's responses in a scrollable chat interface.
 
 ### Health Check
 
@@ -244,13 +291,17 @@ http://localhost:8001/docs
 
 ## Deployment
 
-The application is containerized with Docker and deployed as a FastAPI service.
-The deployed service exposes the same /chat API used by the local application.
+CommerceOps AI is containerized using Docker and deployed on Render.
+
+**Live Application:** https://commerceops-ai.onrender.com/app
+
+**API Documentation:** https://commerceops-ai.onrender.com/docs
 
 ## Future Improvements
-Potential future improvements include:
-- A dedicated web-based chat interface
-- Additional business operations and tools
-- Product-level revenue analytics
-- Expanded automated test coverage
-- More comprehensive business data
+
+- Add product-level revenue analytics
+- Expand business data and operations
+- Add more comprehensive automated tests
+- Improve LLM latency and reduce unnecessary model calls
+- Add authentication and user-level access control
+- Improve frontend experience and responsiveness
