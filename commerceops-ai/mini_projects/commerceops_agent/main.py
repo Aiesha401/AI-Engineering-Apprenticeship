@@ -1,6 +1,6 @@
-import logging_config
+from . import logging_config
 
-from agent import process_message
+from .agent import process_message
 
 
 def main():
