@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CommerceOps AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        #chat {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            height: 500px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            white-space: pre-wrap;
+        }
+
+        .user {
+            margin-left: auto;
+            background: #e8f0fe;
+        }
+
+        .assistant {
+            background: #f1f1f1;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #222;
+            color: white;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>CommerceOps AI</h1>
+
+    <div class="subtitle">
+        AI assistant for inventory, revenue and business operations.
+    </div>
+
+    <div id="chat">
+        <div class="message assistant">
+            Hello! Ask me about inventory, revenue, or products.
+        </div>
+    </div>
+
+    <div class="input-area">
+
+        <input
+            id="message"
+            type="text"
+            placeholder="Ask a question..."
+        >
+
+        <button id="sendButton" onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function formatResponse(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br>");
+}
+
+
+async function sendMessage() {
+
+    const input = document.getElementById("message");
+    const button = document.getElementById("sendButton");
+    const chat = document.getElementById("chat");
+
+    const message = input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    const userMessage = document.createElement("div");
+
+    userMessage.className = "message user";
+    userMessage.textContent = message;
+
+    chat.appendChild(userMessage);
+
+    input.value = "";
+    button.disabled = true;
+
+    const loadingMessage = document.createElement("div");
+
+    loadingMessage.className = "message assistant";
+    loadingMessage.textContent = "Thinking...";
+
+    chat.appendChild(loadingMessage);
+
+    try {
+
+        const response = await fetch("/chat", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: message
+            })
+        });
+
+        const data = await response.json();
+
+        loadingMessage.innerHTML =
+            formatResponse(
+                data.answer || "No response received."
+            );
+
+    } catch (error) {
+
+        loadingMessage.textContent =
+            "Unable to connect to CommerceOps AI.";
+
+    } finally {
+
+        button.disabled = false;
+        input.focus();
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+}
+
+
+document.getElementById("message").addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

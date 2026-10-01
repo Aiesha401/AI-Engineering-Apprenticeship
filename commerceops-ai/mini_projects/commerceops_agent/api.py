@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from .agent import process_message
@@ -15,12 +18,22 @@ class ChatRequest(BaseModel):
     message: str
 
 
+STATIC_DIR = Path(__file__).parent / "static"
+
+
 @app.get("/")
 def health_check():
     return {
         "status": "ok",
         "service": "CommerceOps AI"
     }
+
+
+@app.get("/app")
+def chat_interface():
+    return FileResponse(
+        STATIC_DIR / "index.html"
+    )
 
 
 @app.post("/chat")
