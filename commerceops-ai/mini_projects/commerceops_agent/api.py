@@ -25,10 +25,7 @@ def health_check():
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-
-    answer = process_message(
-        request.message
-    )
+    answer = process_message(request.message)
 
     return {
         "answer": answer

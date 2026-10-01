@@ -1,11 +1,13 @@
-import logging
 import json
+import logging
 
-from .config import client, MODEL
-from .tools import tool_functions
+from .config import MODEL, client
 from .schemas import tools
+from .tools import tool_functions
+
 
 logger = logging.getLogger(__name__)
+
 
 messages = [
     {
@@ -21,10 +23,7 @@ messages = [
 
 
 def process_message(user_input):
-
-    logger.info(
-        "Received user message"
-    )
+    logger.info("Received user message")
 
     messages.append(
         {
@@ -34,7 +33,6 @@ def process_message(user_input):
     )
 
     while True:
-
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages,
@@ -45,70 +43,47 @@ def process_message(user_input):
 
         message = response.choices[0].message
 
-        logger.info(
-            "Model response received"
-        )
-
+        logger.info("Model response received")
 
         messages.append(message)
 
-        if message.tool_calls:
+        if not message.tool_calls:
+            return message.content
 
-            for tool_call in message.tool_calls:
+        for tool_call in message.tool_calls:
+            tool_name = tool_call.function.name
 
-                tool_name = tool_call.function.name
+            logger.info("Tool requested: %s", tool_name)
 
-                logger.info(
-                    "Tool requested: %s",
-                    tool_name
-                )
+            arguments = json.loads(
+                tool_call.function.arguments
+            )
 
-                arguments = json.loads(
-                    tool_call.function.arguments
-                )
+            logger.info("Tool arguments: %s", arguments)
 
-                logger.info(
-                    "Tool arguments: %s",
-                    arguments
-                )
+            if tool_name not in tool_functions:
+                tool_result = f"Tool '{tool_name}' not found."
+            else:
+                try:
+                    tool_result = tool_functions[tool_name](**arguments)
 
-                if tool_name not in tool_functions:
-
-                    tool_result = (
-                        f"Tool '{tool_name}' not found."
+                    logger.info(
+                        "Tool completed: %s",
+                        tool_name
                     )
 
-                else:
+                except Exception as e:
+                    logger.exception(
+                        "Tool execution failed: %s",
+                        tool_name
+                    )
 
-                    try:
-                        tool_result = tool_functions[
-                            tool_name
-                        ](**arguments)
+                    tool_result = f"Tool execution failed: {e}"
 
-                        logger.info(
-                            "Tool completed: %s",
-                            tool_name
-                        )
-
-                    except Exception as e:
-
-                        logger.exception(
-                            "Tool execution failed: %s",
-                            tool_name
-                        )
-
-                        tool_result = (
-                            f"Tool execution failed: {e}"
-                        )
-
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tool_call.id,
-                        "content": str(tool_result)
-                    }
-                )
-
-            continue
-
-        return message.content
+            messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": str(tool_result)
+                }
+            )
