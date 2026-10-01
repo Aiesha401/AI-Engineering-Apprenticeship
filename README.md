@@ -247,25 +247,24 @@ The current test suite covers the core business tools.
 
 ## Local Setup
 
-1. Clone the repository
-git clone https://github.com/Aiesha401/AI-Engineering-Apprenticeship.git
-cd commerceops-ai
+1. Clone the repository git clone https://github.com/Aiesha401/AI-Engineering-Apprenticeship.git
+     cd commerceops-ai
 
 2. Create a virtual environment
-Windows PowerShell:
-python -m venv venv
+     Windows PowerShell:
+     python -m venv venv
 
-Activate it:
-.\venv\Scripts\Activate.ps1
+     Activate it:
+     .\venv\Scripts\Activate.ps1
 
 3. Install dependencies
-python -m pip install -r requirements.txt
+     python -m pip install -r requirements.txt
 
 4. Configure environment variables
-Create a .env file containing the required API configuration.
-Do not commit your .env file or API keys to GitHub.
+     Create a .env file containing the required API configuration.
+     Do not commit your .env file or API keys to GitHub.
 5. Run the terminal application
-python -m mini_projects.commerceops_agent.main
+     python -m mini_projects.commerceops_agent.main
 
 ## Running the API
 Start the FastAPI application with:
